@@ -4,15 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import { useMenu } from '../../hooks/useMenu';
 import { useDeals } from '../../hooks/useDeals';
 import { useRestaurant } from '../../hooks/useRestaurant';
+import { useLanguage } from '../../context/LanguageContext';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Settings, BookOpen, Tag } from 'lucide-react';
+import { ArrowRight, Settings, BookOpen, Tag, Home } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const { restaurant } = useRestaurant();
   const { categories, menuItems } = useMenu();
   const { deals } = useDeals();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   
   const totalMenuItems = menuItems.length;
@@ -27,36 +29,38 @@ const Dashboard: React.FC = () => {
     return new Date(deal.validFrom) <= now && new Date(deal.validTo) >= now;
   }).length;
 
+  const placeholderImage = "/placeholder.svg";
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-2">{t('dashboard')}</h1>
           <p className="text-muted-foreground">
-            Manage your restaurant, menu items, and special deals.
+            {t('manageYourRestaurant')}
           </p>
         </div>
         
         {/* Quick Stats */}
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card className="border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Menu Items
+                {t('menuItems')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{totalMenuItems}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {availableItems} available • {unavailableItems} unavailable
+                {availableItems} {t('available')} • {unavailableItems} {t('unavailable')}
               </p>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Categories
+                {t('categories')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -64,24 +68,24 @@ const Dashboard: React.FC = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="border-l-4 border-l-amber-500 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Deals
+                {t('totalDeals')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{totalDeals}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {activeDeals} active deals
+                {activeDeals} {t('activeDeals')}
               </p>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="border-l-4 border-l-purple-500 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Restaurant
+                {t('restaurant')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -95,66 +99,69 @@ const Dashboard: React.FC = () => {
         
         {/* Quick Actions */}
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
-          <Card>
+          <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="h-2 bg-blue-500"></div>
             <CardHeader>
-              <CardTitle>Restaurant Details</CardTitle>
+              <CardTitle>{t('restaurantDetails')}</CardTitle>
               <CardDescription>
-                Update your restaurant profile, contact info, and branding.
+                {t('updateProfile')}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-6">
               <Button 
                 variant="outline" 
-                className="w-full justify-between"
+                className="w-full justify-between border-dashed"
                 onClick={() => navigate('/dashboard/restaurant')}
               >
                 <div className="flex items-center gap-2">
                   <Settings className="h-4 w-4" />
-                  <span>Manage Restaurant</span>
+                  <span>{t('manageRestaurant')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="h-2 bg-green-500"></div>
             <CardHeader>
-              <CardTitle>Menu Management</CardTitle>
+              <CardTitle>{t('menuManagement')}</CardTitle>
               <CardDescription>
-                Manage your menu categories, food items, and availability.
+                {t('updateProfile')}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-6">
               <Button 
                 variant="outline" 
-                className="w-full justify-between"
+                className="w-full justify-between border-dashed"
                 onClick={() => navigate('/dashboard/menu')}
               >
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
-                  <span>Manage Menu</span>
+                  <span>{t('manageMenu')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="h-2 bg-amber-500"></div>
             <CardHeader>
-              <CardTitle>Deals & Promotions</CardTitle>
+              <CardTitle>{t('dealsPromotions')}</CardTitle>
               <CardDescription>
-                Create and manage special deals, discounts and promotions.
+                {t('updateProfile')}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-6">
               <Button 
                 variant="outline" 
-                className="w-full justify-between"
+                className="w-full justify-between border-dashed"
                 onClick={() => navigate('/dashboard/deals')}
               >
                 <div className="flex items-center gap-2">
                   <Tag className="h-4 w-4" />
-                  <span>Manage Deals</span>
+                  <span>{t('manageDeals')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4" />
               </Button>
