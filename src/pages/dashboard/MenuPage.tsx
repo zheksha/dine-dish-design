@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useMenu } from '../../hooks/useMenu';
 import DashboardLayout from '../../layouts/DashboardLayout';
@@ -110,7 +109,7 @@ const MenuPage: React.FC = () => {
     const { name, value, type } = e.target;
     
     const formItem = editingMenuItem || newMenuItem;
-    let updatedValue = value;
+    let updatedValue: any = value;
     
     if (type === 'number') {
       updatedValue = parseFloat(value);
@@ -211,7 +210,12 @@ const MenuPage: React.FC = () => {
         );
         
         const position = categoryItems.length;
-        await addMenuItem({ ...newMenuItem, position });
+        const newItemWithPosition = { 
+          ...newMenuItem, 
+          position 
+        };
+        
+        await addMenuItem(newItemWithPosition);
         toast({ title: "Menu item added successfully" });
         setIsAddingMenuItem(false);
         setNewMenuItem({
