@@ -50,27 +50,11 @@ const App = () => (
                     <Route path="/favorites" element={<FavoritesPage />} />
                     <Route path="/deals" element={<DealsPage />} />
                     
-                    {/* Admin Dashboard Routes - Protected */}
-                    <Route path="/dashboard" element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/dashboard/restaurant" element={
-                      <ProtectedRoute>
-                        <RestaurantPage />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/dashboard/menu" element={
-                      <ProtectedRoute>
-                        <MenuManagementPage />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/dashboard/deals" element={
-                      <ProtectedRoute>
-                        <DealsManagementPage />
-                      </ProtectedRoute>
-                    } />
+                    {/* Admin Dashboard Routes - No longer protected */}
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard/restaurant" element={<RestaurantPage />} />
+                    <Route path="/dashboard/menu" element={<MenuManagementPage />} />
+                    <Route path="/dashboard/deals" element={<DealsManagementPage />} />
                     
                     {/* Catch-all route */}
                     <Route path="*" element={<NotFound />} />

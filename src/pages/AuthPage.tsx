@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,21 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSelector from '../components/LanguageSelector';
-import { Shield } from 'lucide-react';
+import { Shield, ArrowRight, Home } from 'lucide-react';
 
 const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('admin@example.com');
   const [password, setPassword] = useState('admin');
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp } = useAuth();
   const { t } = useLanguage();
-  const navigate = useNavigate();
-
-  // Redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
 
   const handleSignIn = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -39,7 +31,19 @@ const AuthPage: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-primary/10 to-background">
       <header className="container flex justify-between items-center py-4">
         <h1 className="text-2xl font-bold">Dine Dish Design</h1>
-        <LanguageSelector />
+        <div className="flex items-center space-x-4">
+          <LanguageSelector />
+          <Button variant="ghost" asChild>
+            <Link to="/dashboard">
+              {t('adminDashboard')} <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/">
+              <Home className="mr-2 h-4 w-4" /> {t('backToMenu')}
+            </Link>
+          </Button>
+        </div>
       </header>
       
       <main className="flex-1 flex items-center justify-center p-4">
@@ -50,7 +54,12 @@ const AuthPage: React.FC = () => {
                 <Shield className="w-6 h-6 text-primary" />
               </div>
               <CardTitle className="text-2xl">{t('adminPortal')}</CardTitle>
-              <CardDescription>{t('signIn')} {t('or')} {t('signUp')} {t('toAccess')}</CardDescription>
+              <CardDescription>
+                {t('signIn')} {t('or')} {t('signUp')} {t('toAccess')}
+              </CardDescription>
+              <CardDescription className="mt-2 text-sm bg-amber-100 p-2 rounded text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                You can access the dashboard directly without signing in by clicking the "Admin Dashboard" button above.
+              </CardDescription>
             </CardHeader>
             
             <Tabs defaultValue="signin" className="w-full">
