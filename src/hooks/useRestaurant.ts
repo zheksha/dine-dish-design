@@ -96,11 +96,13 @@ export const useRestaurant = () => {
       };
 
       if (data.theme_settings && typeof data.theme_settings === 'object') {
+        // Type assertion and handle each property safely
+        const themeObject = data.theme_settings as Record<string, any>;
         themeSettings = {
-          primary: data.theme_settings.primary as string || themeSettings.primary,
-          secondary: data.theme_settings.secondary as string || themeSettings.secondary,
-          accent: data.theme_settings.accent as string || themeSettings.accent,
-          background: data.theme_settings.background as string || themeSettings.background
+          primary: typeof themeObject.primary === 'string' ? themeObject.primary : themeSettings.primary,
+          secondary: typeof themeObject.secondary === 'string' ? themeObject.secondary : themeSettings.secondary,
+          accent: typeof themeObject.accent === 'string' ? themeObject.accent : themeSettings.accent,
+          background: typeof themeObject.background === 'string' ? themeObject.background : themeSettings.background
         };
       }
 
