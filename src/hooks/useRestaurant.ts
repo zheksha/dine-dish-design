@@ -25,22 +25,38 @@ export const useRestaurant = () => {
           throw error;
         }
 
-        // Handle themeSettings - ensure it's properly typed
-        let themeSettings = {
+        // Define default theme settings
+        const defaultThemeSettings = {
           primary: '#0f172a',
           secondary: '#e5e7eb',
           accent: '#3b82f6',
           background: '#ffffff'
         };
 
-        // If themeSettings exists in data and is an object, use it
-        if (data.theme_settings && typeof data.theme_settings === 'object') {
-          themeSettings = {
-            primary: data.theme_settings.primary as string || themeSettings.primary,
-            secondary: data.theme_settings.secondary as string || themeSettings.secondary,
-            accent: data.theme_settings.accent as string || themeSettings.accent,
-            background: data.theme_settings.background as string || themeSettings.background
-          };
+        // Handle theme settings safely
+        let themeSettings = { ...defaultThemeSettings };
+
+        // Check if theme_settings exists and is an object
+        if (data.theme_settings && 
+            typeof data.theme_settings === 'object' && 
+            !Array.isArray(data.theme_settings)) {
+          
+          // Type assertion to Record<string, unknown>
+          const themeObject = data.theme_settings as Record<string, unknown>;
+          
+          // Safely extract each property with type checking
+          if (typeof themeObject.primary === 'string') {
+            themeSettings.primary = themeObject.primary;
+          }
+          if (typeof themeObject.secondary === 'string') {
+            themeSettings.secondary = themeObject.secondary;
+          }
+          if (typeof themeObject.accent === 'string') {
+            themeSettings.accent = themeObject.accent;
+          }
+          if (typeof themeObject.background === 'string') {
+            themeSettings.background = themeObject.background;
+          }
         }
 
         setRestaurant({
@@ -87,23 +103,38 @@ export const useRestaurant = () => {
         throw error;
       }
 
-      // Properly handle themeSettings from response data
-      let themeSettings = {
+      // Define default theme settings
+      const defaultThemeSettings = {
         primary: '#0f172a',
         secondary: '#e5e7eb',
         accent: '#3b82f6',
         background: '#ffffff'
       };
 
-      if (data.theme_settings && typeof data.theme_settings === 'object') {
-        // Type assertion and handle each property safely
-        const themeObject = data.theme_settings as Record<string, any>;
-        themeSettings = {
-          primary: typeof themeObject.primary === 'string' ? themeObject.primary : themeSettings.primary,
-          secondary: typeof themeObject.secondary === 'string' ? themeObject.secondary : themeSettings.secondary,
-          accent: typeof themeObject.accent === 'string' ? themeObject.accent : themeSettings.accent,
-          background: typeof themeObject.background === 'string' ? themeObject.background : themeSettings.background
-        };
+      // Handle theme settings safely
+      let themeSettings = { ...defaultThemeSettings };
+
+      // Check if theme_settings exists and is an object
+      if (data.theme_settings && 
+          typeof data.theme_settings === 'object' && 
+          !Array.isArray(data.theme_settings)) {
+        
+        // Type assertion to Record<string, unknown>
+        const themeObject = data.theme_settings as Record<string, unknown>;
+        
+        // Safely extract each property with type checking
+        if (typeof themeObject.primary === 'string') {
+          themeSettings.primary = themeObject.primary;
+        }
+        if (typeof themeObject.secondary === 'string') {
+          themeSettings.secondary = themeObject.secondary;
+        }
+        if (typeof themeObject.accent === 'string') {
+          themeSettings.accent = themeObject.accent;
+        }
+        if (typeof themeObject.background === 'string') {
+          themeSettings.background = themeObject.background;
+        }
       }
 
       // Update local state with the returned data and proper typing
