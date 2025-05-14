@@ -31,7 +31,14 @@ export const useRestaurant = () => {
           address: data.address,
           contactEmail: data.contact_email,
           contactPhone: data.contact_phone,
-          logoUrl: data.logo_url
+          logoUrl: data.logo_url,
+          themeId: data.theme_id || 'default-light',
+          themeSettings: data.theme_settings || {
+            primary: '#0f172a',
+            secondary: '#e5e7eb',
+            accent: '#3b82f6',
+            background: '#ffffff'
+          }
         });
         setIsLoading(false);
       } catch (err) {
@@ -55,6 +62,8 @@ export const useRestaurant = () => {
           contact_email: updatedRestaurant.contactEmail,
           contact_phone: updatedRestaurant.contactPhone,
           logo_url: updatedRestaurant.logoUrl,
+          theme_id: updatedRestaurant.themeId,
+          theme_settings: updatedRestaurant.themeSettings,
           updated_at: new Date().toISOString()
         })
         .eq('id', updatedRestaurant.id)
@@ -72,7 +81,9 @@ export const useRestaurant = () => {
         address: data.address,
         contactEmail: data.contact_email,
         contactPhone: data.contact_phone,
-        logoUrl: data.logo_url
+        logoUrl: data.logo_url,
+        themeId: data.theme_id,
+        themeSettings: data.theme_settings
       };
 
       setRestaurant(updatedData);

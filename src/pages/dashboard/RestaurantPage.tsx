@@ -1,14 +1,32 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRestaurant } from '../../hooks/useRestaurant';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import ThemeManager from '../../components/dashboard/ThemeManager';
 import RestaurantDetails from '../../components/dashboard/RestaurantDetails';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const RestaurantPage: React.FC = () => {
   const { restaurant, isLoading } = useRestaurant();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("details");
+  
+  // Parse tab from URL if present
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const tab = searchParams.get('tab');
+    if (tab && (tab === 'details' || tab === 'appearance')) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
+  
+  // Update URL when tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    navigate(`?tab=${value}`, { replace: true });
+  };
 
   if (isLoading) {
     return (
@@ -31,9 +49,8 @@ const RestaurantPage: React.FC = () => {
         </div>
 
         <Tabs
-          defaultValue="details"
           value={activeTab}
-          onValueChange={setActiveTab}
+          onValueChange={handleTabChange}
           className="space-y-4"
         >
           <TabsList>

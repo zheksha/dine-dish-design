@@ -7,6 +7,12 @@ export interface Restaurant {
   contactPhone?: string;
   logoUrl?: string;
   themeId?: string;
+  themeSettings?: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+  };
 }
 
 export interface Theme {

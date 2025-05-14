@@ -1,5 +1,13 @@
 
 project_id = "geifywrqficiuvybmrgc"
 
+[storage]
+region = "us-east-1"
+
+[storage.buckets]
+[storage.buckets.restaurant_logos]
+monitor_bucket_uploads = true
+audit_user_ids = true
+
 [functions.setup]
 verify_jwt = false
