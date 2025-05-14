@@ -4,22 +4,32 @@ import { MenuItem } from '../types';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
+import { Heart, Plus, Minus } from "lucide-react";
 
 interface MenuItemCardProps {
   menuItem: MenuItem;
   onClick?: () => void;
+  compact?: boolean;
 }
 
-const MenuItemCard: React.FC<MenuItemCardProps> = ({ menuItem, onClick }) => {
-  const { addItem } = useCart();
+const MenuItemCard: React.FC<MenuItemCardProps> = ({ menuItem, onClick, compact = false }) => {
+  const { addItem, removeItem, cart } = useCart();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   
   const favorite = isFavorite(menuItem.id || '');
   
+  // Find item in cart to display quantity
+  const cartItem = cart.items.find(item => item.menuItem.id === menuItem.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
+  
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     addItem(menuItem);
+  };
+
+  const handleRemoveFromCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    removeItem(menuItem.id || '');
   };
   
   const handleFavoriteToggle = (e: React.MouseEvent) => {
@@ -30,6 +40,86 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({ menuItem, onClick }) => {
       addFavorite(menuItem.id || '');
     }
   };
+
+  if (compact) {
+    return (
+      <div 
+        className="relative border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-card text-card-foreground menu-card-hover cursor-pointer flex"
+        onClick={onClick}
+      >
+        {menuItem.imageUrl && (
+          <div className="w-24 h-24 flex-shrink-0">
+            <img 
+              src={menuItem.imageUrl} 
+              alt={menuItem.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+        
+        <div className="flex-grow p-3 flex justify-between">
+          <div>
+            <h3 className="font-medium text-base truncate">{menuItem.name}</h3>
+            <p className="text-xs text-muted-foreground line-clamp-1">
+              {menuItem.description}
+            </p>
+            <span className="font-medium text-sm text-primary">${menuItem.price.toFixed(2)}</span>
+          </div>
+          
+          <div className="flex flex-col justify-between items-end">
+            <button 
+              onClick={handleFavoriteToggle}
+              className="p-1 bg-background/80 rounded-full backdrop-blur-sm"
+              aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Heart 
+                className={`h-4 w-4 ${favorite ? 'fill-rose-500 text-rose-500' : 'text-foreground'}`} 
+              />
+            </button>
+            
+            {menuItem.available ? (
+              <div className="flex items-center mt-2">
+                {quantity > 0 ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7 rounded-full p-0"
+                      onClick={handleRemoveFromCart}
+                    >
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <span className="mx-2 text-sm font-medium w-4 text-center">
+                      {quantity}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7 rounded-full p-0"
+                      onClick={handleAddToCart}
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 w-7 rounded-full p-0"
+                    onClick={handleAddToCart}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <span className="text-xs text-destructive">Sold Out</span>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -82,15 +172,44 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({ menuItem, onClick }) => {
         </div>
 
         <div className="flex justify-between items-center">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={handleAddToCart}
-            disabled={!menuItem.available}
-          >
-            {menuItem.available ? 'Add to Cart' : 'Sold Out'}
-          </Button>
+          {menuItem.available ? (
+            quantity > 0 ? (
+              <div className="flex items-center justify-between w-full">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleRemoveFromCart}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="mx-2 font-medium">{quantity}</span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleAddToCart}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleAddToCart}
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add to Cart
+              </Button>
+            )
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              disabled
+            >
+              Sold Out
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Deal } from '../types';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface DealBannerProps {
   deal: Deal;
@@ -10,6 +11,15 @@ interface DealBannerProps {
 
 const DealBanner: React.FC<DealBannerProps> = ({ deal, onClick }) => {
   const isValid = new Date() >= new Date(deal.validFrom) && new Date() <= new Date(deal.validTo);
+  const navigate = useNavigate();
+  
+  const handleViewDeal = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(`/deals/${deal.id}`);
+    }
+  };
   
   return (
     <div 
@@ -52,7 +62,7 @@ const DealBanner: React.FC<DealBannerProps> = ({ deal, onClick }) => {
 
         <Button
           variant={isValid ? "default" : "outline"}
-          onClick={onClick}
+          onClick={handleViewDeal}
           className="whitespace-nowrap"
           disabled={!isValid}
         >

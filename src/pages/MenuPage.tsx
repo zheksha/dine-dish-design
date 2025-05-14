@@ -9,7 +9,9 @@ import DealBanner from '../components/DealBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search } from 'lucide-react';
+import { Search, LayoutGrid, List } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 const MenuPage: React.FC = () => {
   const { categories, menuItems, isLoading } = useMenu();
@@ -17,6 +19,7 @@ const MenuPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [compactView, setCompactView] = useState(false);
   
   const activeDeals = getActiveDeals();
 
@@ -95,23 +98,38 @@ const MenuPage: React.FC = () => {
             />
           </div>
           
-          {allTags.length > 0 && (
-            <ScrollArea className="whitespace-nowrap pb-2">
-              <div className="flex gap-2">
-                {allTags.map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTag(tag)}
-                    className={`food-tag cursor-pointer ${tag} ${
-                      selectedTags.includes(tag) ? 'ring-2 ring-primary' : ''
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-grow overflow-x-auto pb-2 pr-4">
+              <ScrollArea className="whitespace-nowrap" orientation="horizontal">
+                <div className="flex gap-2">
+                  {allTags.map(tag => (
+                    <button
+                      key={tag}
+                      onClick={() => toggleTag(tag)}
+                      className={`food-tag cursor-pointer ${tag} ${
+                        selectedTags.includes(tag) ? 'ring-2 ring-primary' : ''
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+            
+            <div className="flex items-center space-x-2 ml-4 flex-shrink-0">
+              <div className="flex items-center space-x-1">
+                <LayoutGrid className={`h-4 w-4 ${!compactView ? 'text-primary' : 'text-muted-foreground'}`} />
+                <Switch 
+                  checked={compactView}
+                  onCheckedChange={setCompactView}
+                  id="compact-view"
+                />
+                <List className={`h-4 w-4 ${compactView ? 'text-primary' : 'text-muted-foreground'}`} />
               </div>
-            </ScrollArea>
-          )}
+              <Label htmlFor="compact-view" className="text-sm">Compact</Label>
+            </div>
+          </div>
         </div>
 
         {/* Categories Tabs */}
@@ -126,7 +144,11 @@ const MenuPage: React.FC = () => {
           
           {categories.map(category => (
             <TabsContent key={category.id} value={category.id || ''}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className={`grid gap-6 ${
+                compactView 
+                  ? 'grid-cols-1' 
+                  : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              }`}>
                 {filteredMenuItems
                   .filter(item => item.categoryId === category.id)
                   .map(menuItem => (
@@ -134,6 +156,7 @@ const MenuPage: React.FC = () => {
                       key={menuItem.id} 
                       menuItem={menuItem}
                       onClick={() => navigate(`/menu/${menuItem.id}`)}
+                      compact={compactView}
                     />
                   ))}
                 

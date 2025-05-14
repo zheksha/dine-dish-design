@@ -17,10 +17,83 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import MenuItemCard from '../components/MenuItemCard';
 
+// Ingredient emojis map
+const ingredientEmojis: Record<string, string> = {
+  'tomato': '🍅',
+  'lettuce': '🥬',
+  'cheese': '🧀',
+  'onion': '🧅',
+  'garlic': '🧄',
+  'chicken': '🍗',
+  'beef': '🥩',
+  'pork': '🥓',
+  'fish': '🐟',
+  'shrimp': '🍤',
+  'rice': '🍚',
+  'pasta': '🍝',
+  'potato': '🥔',
+  'egg': '🥚',
+  'milk': '🥛',
+  'butter': '🧈',
+  'bread': '🍞',
+  'salt': '🧂',
+  'pepper': '🌶️',
+  'olive oil': '🫒',
+  'mushroom': '🍄',
+  'carrot': '🥕',
+  'cucumber': '🥒',
+  'avocado': '🥑',
+  'lemon': '🍋',
+  'lime': '🍋',
+  'orange': '🍊',
+  'apple': '🍎',
+  'banana': '🍌',
+  'strawberry': '🍓',
+  'blueberry': '🫐',
+  'watermelon': '🍉',
+  'grapes': '🍇',
+  'pineapple': '🍍',
+  'corn': '🌽',
+  'chili': '🌶️',
+  'ginger': '🫚',
+  'cinnamon': '🌰',
+  'chocolate': '🍫',
+  'honey': '🍯',
+  'soy sauce': '🍶',
+  'vinegar': '🧪',
+  'flour': '🌾',
+  'sugar': '🍬',
+  'water': '💧',
+  'oil': '🛢️',
+  'nuts': '🥜',
+  'almond': '🥜',
+  'walnut': '🌰',
+  'basil': '🌿',
+  'parsley': '🌿',
+  'mint': '🌿',
+  'oregano': '🌿',
+  'thyme': '🌿',
+  'rosemary': '🌿',
+  'spinach': '🥬',
+  'cabbage': '🥬',
+  'broccoli': '🥦',
+  'cauliflower': '🥦',
+  'bell pepper': '🫑',
+  'zucchini': '🥬',
+  'eggplant': '🍆',
+  'pumpkin': '🎃',
+  'beans': '🫘',
+  'peas': '🫛',
+  'yogurt': '🥣',
+  'cream': '🍶',
+  'wine': '🍷',
+  'beer': '🍺'
+};
+
 const MenuItemPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
   const { menuItems, categories } = useMenu();
-  const { addItem } = useCart();
+  const { addItem, removeItem, cart } = useCart();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   const navigate = useNavigate();
   
@@ -41,9 +114,17 @@ const MenuItemPage: React.FC = () => {
           .slice(0, 3);
           
         setRelatedItems(categoryItems);
+        
+        // Check if the item is already in cart and set the quantity
+        const cartItem = cart.items.find(item => item.menuItem.id === foundItem.id);
+        if (cartItem) {
+          setQuantity(cartItem.quantity);
+        } else {
+          setQuantity(1);
+        }
       }
     }
-  }, [itemId, menuItems]);
+  }, [itemId, menuItems, cart.items]);
   
   if (!menuItem) {
     return (
@@ -75,16 +156,49 @@ const MenuItemPage: React.FC = () => {
   };
   
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addItem(menuItem);
-    }
+    // Get current quantity in cart
+    const cartItem = cart.items.find(item => item.menuItem.id === menuItem.id);
+    const currentQuantity = cartItem ? cartItem.quantity : 0;
     
-    // Reset quantity
-    setQuantity(1);
+    // If the desired quantity is greater than current quantity, add items
+    if (quantity > currentQuantity) {
+      for (let i = 0; i < (quantity - currentQuantity); i++) {
+        addItem(menuItem);
+      }
+    } 
+    // If desired quantity is less than current quantity, remove items
+    else if (quantity < currentQuantity) {
+      // Remove all and add the correct amount
+      removeItem(menuItem.id || '');
+      for (let i = 0; i < quantity; i++) {
+        addItem(menuItem);
+      }
+    }
+    // If equal, do nothing
   };
   
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+  
+  // Get emoji for ingredient
+  const getIngredientWithEmoji = (ingredient: string) => {
+    const lowerIngredient = ingredient.toLowerCase();
+    
+    // Check if there's a direct match
+    if (ingredientEmojis[lowerIngredient]) {
+      return `${ingredientEmojis[lowerIngredient]} ${ingredient}`;
+    }
+    
+    // Check for partial matches
+    for (const [key, emoji] of Object.entries(ingredientEmojis)) {
+      if (lowerIngredient.includes(key) || key.includes(lowerIngredient)) {
+        return `${emoji} ${ingredient}`;
+      }
+    }
+    
+    // Default emoji for ingredients without matches
+    return `🍴 ${ingredient}`;
+  };
   
   // Find category name
   const categoryName = categories.find(cat => cat.id === menuItem.categoryId)?.name || '';
@@ -143,9 +257,11 @@ const MenuItemPage: React.FC = () => {
             {menuItem.ingredients && menuItem.ingredients.length > 0 && (
               <div className="mb-6">
                 <h2 className="font-medium text-lg mb-2">Ingredients</h2>
-                <ul className="list-disc list-inside text-muted-foreground">
+                <ul className="list-none text-muted-foreground grid grid-cols-1 md:grid-cols-2 gap-1">
                   {menuItem.ingredients.map((ingredient, index) => (
-                    <li key={index}>{ingredient}</li>
+                    <li key={index} className="flex items-center">
+                      {getIngredientWithEmoji(ingredient)}
+                    </li>
                   ))}
                 </ul>
               </div>
