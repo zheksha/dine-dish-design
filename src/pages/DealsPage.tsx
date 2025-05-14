@@ -7,7 +7,7 @@ import { Tag } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const DealsPage: React.FC = () => {
-  const { deals, isLoading } = useDeals();
+  const { deals, isLoading, error } = useDeals();
   
   if (isLoading) {
     return (
@@ -15,6 +15,18 @@ const DealsPage: React.FC = () => {
         <div className="layout-container py-16">
           <div className="text-center">
             <p>Loading deals...</p>
+          </div>
+        </div>
+      </CustomerLayout>
+    );
+  }
+  
+  if (error) {
+    return (
+      <CustomerLayout>
+        <div className="layout-container py-16">
+          <div className="text-center">
+            <p>Error loading deals: {error.message}</p>
           </div>
         </div>
       </CustomerLayout>
@@ -32,9 +44,14 @@ const DealsPage: React.FC = () => {
   );
 
   const handleViewDeal = (deal: any) => {
+    const validUntil = new Date(deal.validTo).toLocaleDateString();
+    const discountText = deal.discountType === 'percentage' 
+      ? `${deal.discountValue}% off` 
+      : `$${deal.discountValue.toFixed(2)} off`;
+      
     toast({
       title: deal.name,
-      description: `${deal.description} - Valid until ${new Date(deal.validTo).toLocaleDateString()}`,
+      description: `${deal.description} - ${discountText}. Valid until ${validUntil}`,
       duration: 5000
     });
   };
@@ -79,7 +96,11 @@ const DealsPage: React.FC = () => {
                 </h2>
                 <div className="space-y-4">
                   {inactiveDeals.map(deal => (
-                    <DealBanner key={deal.id} deal={deal} />
+                    <DealBanner 
+                      key={deal.id} 
+                      deal={deal}
+                      onClick={() => handleViewDeal(deal)}
+                    />
                   ))}
                 </div>
               </section>
