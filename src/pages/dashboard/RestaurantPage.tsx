@@ -1,11 +1,13 @@
+
 import React, { useState } from 'react';
 import { useRestaurant } from '../../hooks/useRestaurant';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import ThemeManager from '../../components/dashboard/ThemeManager';
+import RestaurantDetails from '../../components/dashboard/RestaurantDetails';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const RestaurantPage: React.FC = () => {
-  const { restaurant, isLoading, updateRestaurant } = useRestaurant();
+  const { restaurant, isLoading } = useRestaurant();
   const [activeTab, setActiveTab] = useState("details");
 
   if (isLoading) {
@@ -40,8 +42,7 @@ const RestaurantPage: React.FC = () => {
           </TabsList>
           
           <TabsContent value="details" className="space-y-4">
-            {/* Original Restaurant details form goes here */}
-            <p>Restaurant details form...</p>
+            <RestaurantDetails />
           </TabsContent>
           
           <TabsContent value="appearance" className="space-y-4">
