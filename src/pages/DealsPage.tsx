@@ -4,6 +4,7 @@ import { useDeals } from '../hooks/useDeals';
 import CustomerLayout from '../layouts/CustomerLayout';
 import DealBanner from '../components/DealBanner';
 import { Tag } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const DealsPage: React.FC = () => {
   const { deals, isLoading } = useDeals();
@@ -30,6 +31,14 @@ const DealsPage: React.FC = () => {
     deal => new Date(deal.validFrom) > now || new Date(deal.validTo) < now
   );
 
+  const handleViewDeal = (deal: any) => {
+    toast({
+      title: deal.name,
+      description: `${deal.description} - Valid until ${new Date(deal.validTo).toLocaleDateString()}`,
+      duration: 5000
+    });
+  };
+
   return (
     <CustomerLayout>
       <div className="layout-container py-8">
@@ -53,7 +62,11 @@ const DealsPage: React.FC = () => {
                 <h2 className="text-xl font-medium mb-4">Active Deals</h2>
                 <div className="space-y-4">
                   {activeDeals.map(deal => (
-                    <DealBanner key={deal.id} deal={deal} />
+                    <DealBanner 
+                      key={deal.id} 
+                      deal={deal}
+                      onClick={() => handleViewDeal(deal)}
+                    />
                   ))}
                 </div>
               </section>
