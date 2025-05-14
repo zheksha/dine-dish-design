@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMenu } from '../hooks/useMenu';
@@ -100,7 +99,7 @@ const MenuPage: React.FC = () => {
           
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-grow overflow-x-auto pb-2 pr-4">
-              <ScrollArea className="whitespace-nowrap" orientation="horizontal">
+              <ScrollArea className="whitespace-nowrap">
                 <div className="flex gap-2">
                   {allTags.map(tag => (
                     <button
