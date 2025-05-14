@@ -22,10 +22,12 @@ const RestaurantPage: React.FC = () => {
     }
   }, [location.search]);
   
-  // Update URL when tab changes
+  // Update URL when tab changes without causing a full page refresh
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    navigate(`?tab=${value}`, { replace: true });
+    // Use replace:true to avoid adding to browser history stack
+    const newUrl = `${location.pathname}?tab=${value}`;
+    navigate(newUrl, { replace: true });
   };
 
   if (isLoading) {
