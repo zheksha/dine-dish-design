@@ -54,12 +54,14 @@ const MenuPage: React.FC = () => {
     price: 0,
     type: 'veg',
     tags: [],
+    ingredients: [],
     available: true,
     position: 0
   });
   
   const [editingMenuItem, setEditingMenuItem] = useState<MenuItem | null>(null);
   const [currentTag, setCurrentTag] = useState('');
+  const [currentIngredient, setCurrentIngredient] = useState('');
   
   // UI state
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -195,6 +197,44 @@ const MenuPage: React.FC = () => {
     }
   };
   
+  const handleAddIngredient = () => {
+    if (!currentIngredient.trim()) return;
+    
+    const formItem = editingMenuItem || newMenuItem;
+    const ingredients = formItem.ingredients || [];
+    
+    if (!ingredients.includes(currentIngredient)) {
+      const updatedItem = { 
+        ...formItem,
+        ingredients: [...ingredients, currentIngredient]
+      };
+      
+      if (editingMenuItem) {
+        setEditingMenuItem(updatedItem);
+      } else {
+        setNewMenuItem(updatedItem);
+      }
+    }
+    
+    setCurrentIngredient('');
+  };
+  
+  const handleRemoveIngredient = (ingredient: string) => {
+    const formItem = editingMenuItem || newMenuItem;
+    const ingredients = formItem.ingredients || [];
+    
+    const updatedItem = { 
+      ...formItem,
+      ingredients: ingredients.filter(i => i !== ingredient)
+    };
+    
+    if (editingMenuItem) {
+      setEditingMenuItem(updatedItem);
+    } else {
+      setNewMenuItem(updatedItem);
+    }
+  };
+  
   const handleMenuItemSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -225,6 +265,7 @@ const MenuPage: React.FC = () => {
           price: 0,
           type: 'veg',
           tags: [],
+          ingredients: [],
           available: true,
           position: 0
         });
@@ -450,6 +491,7 @@ const MenuPage: React.FC = () => {
                         price: 0,
                         type: 'veg',
                         tags: [],
+                        ingredients: [],
                         available: true,
                         position: 0
                       });
@@ -566,6 +608,7 @@ const MenuPage: React.FC = () => {
                   price: 0,
                   type: 'veg',
                   tags: [],
+                  ingredients: [],
                   available: true,
                   position: 0
                 });
@@ -777,9 +820,52 @@ const MenuPage: React.FC = () => {
             placeholder="https://example.com/image.jpg"
           />
         </div>
+
+        {/* Ingredients Section */}
+        <div className="space-y-2">
+          <Label>Ingredients</Label>
+          <div className="text-xs text-muted-foreground mb-1">
+            Add emoji by typing Windows key + . (or CMD + CTRL + Space on Mac)
+          </div>
+          <div className="flex items-center gap-2">
+            <Input
+              value={currentIngredient}
+              onChange={e => setCurrentIngredient(e.target.value)}
+              placeholder="e.g., 🧀 Cheese"
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddIngredient();
+                }
+              }}
+            />
+            <Button type="button" onClick={handleAddIngredient}>
+              Add
+            </Button>
+          </div>
+          
+          <div className="flex flex-wrap gap-2 pt-2">
+            {(formItem.ingredients || []).map(ingredient => (
+              <Badge key={ingredient} variant="secondary" className="px-2 py-1">
+                {ingredient}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveIngredient(ingredient)}
+                  className="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-secondary-foreground/20"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+            
+            {(formItem.ingredients || []).length === 0 && (
+              <span className="text-sm text-muted-foreground">No ingredients added</span>
+            )}
+          </div>
+        </div>
         
         <div className="space-y-2">
-          <Label>Tags</Label>
+          <Label htmlFor="tags">Tags</Label>
           <div className="flex items-center gap-2">
             <Input
               value={currentTag}
