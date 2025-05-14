@@ -8,20 +8,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Plus, Minus } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, removeOneFromCart, selectCartItemQuantity } from '../store/cartSlice';
+import { useCart } from '../context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const MenuItemPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
   const { menuItems } = useMenu();
   const [menuItem, setMenuItem] = useState<MenuItem | null>(null);
-  const dispatch = useDispatch();
+  const { addItem, removeItem, cart } = useCart();
   
-  const quantity = useSelector((state: any) => 
-    selectCartItemQuantity(state, itemId || '')
-  );
+  // Find item in cart to display quantity
+  const cartItem = cart.items.find(item => item.menuItem.id === itemId);
+  const quantity = cartItem ? cartItem.quantity : 0;
 
   useEffect(() => {
     if (menuItems.length > 0 && itemId) {
@@ -34,7 +34,7 @@ const MenuItemPage: React.FC = () => {
 
   const handleAddToCart = () => {
     if (menuItem) {
-      dispatch(addToCart(menuItem));
+      addItem(menuItem);
       toast({
         title: "Added to cart",
         description: `${menuItem.name} added to your order`
@@ -44,7 +44,7 @@ const MenuItemPage: React.FC = () => {
 
   const handleRemoveFromCart = () => {
     if (menuItem && quantity > 0) {
-      dispatch(removeOneFromCart(menuItem.id || ''));
+      removeItem(menuItem.id || '');
     }
   };
 
