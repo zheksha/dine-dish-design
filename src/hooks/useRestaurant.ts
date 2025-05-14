@@ -25,6 +25,24 @@ export const useRestaurant = () => {
           throw error;
         }
 
+        // Handle themeSettings - ensure it's properly typed
+        let themeSettings = {
+          primary: '#0f172a',
+          secondary: '#e5e7eb',
+          accent: '#3b82f6',
+          background: '#ffffff'
+        };
+
+        // If themeSettings exists in data and is an object, use it
+        if (data.theme_settings && typeof data.theme_settings === 'object') {
+          themeSettings = {
+            primary: data.theme_settings.primary as string || themeSettings.primary,
+            secondary: data.theme_settings.secondary as string || themeSettings.secondary,
+            accent: data.theme_settings.accent as string || themeSettings.accent,
+            background: data.theme_settings.background as string || themeSettings.background
+          };
+        }
+
         setRestaurant({
           id: data.id,
           name: data.name,
@@ -33,12 +51,7 @@ export const useRestaurant = () => {
           contactPhone: data.contact_phone,
           logoUrl: data.logo_url,
           themeId: data.theme_id || 'default-light',
-          themeSettings: data.theme_settings || {
-            primary: '#0f172a',
-            secondary: '#e5e7eb',
-            accent: '#3b82f6',
-            background: '#ffffff'
-          }
+          themeSettings: themeSettings
         });
         setIsLoading(false);
       } catch (err) {
@@ -74,8 +87,25 @@ export const useRestaurant = () => {
         throw error;
       }
 
-      // Update local state with the returned data
-      const updatedData = {
+      // Properly handle themeSettings from response data
+      let themeSettings = {
+        primary: '#0f172a',
+        secondary: '#e5e7eb',
+        accent: '#3b82f6',
+        background: '#ffffff'
+      };
+
+      if (data.theme_settings && typeof data.theme_settings === 'object') {
+        themeSettings = {
+          primary: data.theme_settings.primary as string || themeSettings.primary,
+          secondary: data.theme_settings.secondary as string || themeSettings.secondary,
+          accent: data.theme_settings.accent as string || themeSettings.accent,
+          background: data.theme_settings.background as string || themeSettings.background
+        };
+      }
+
+      // Update local state with the returned data and proper typing
+      const updatedData: Restaurant = {
         id: data.id,
         name: data.name,
         address: data.address,
@@ -83,7 +113,7 @@ export const useRestaurant = () => {
         contactPhone: data.contact_phone,
         logoUrl: data.logo_url,
         themeId: data.theme_id,
-        themeSettings: data.theme_settings
+        themeSettings: themeSettings
       };
 
       setRestaurant(updatedData);
