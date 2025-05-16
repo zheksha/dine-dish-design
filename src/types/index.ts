@@ -1,4 +1,5 @@
 
+
 export interface Restaurant {
   id?: string;
   name: string;
@@ -28,6 +29,7 @@ export interface Category {
   restaurantId?: string;
   name: string;
   position: number;
+  description?: string; // Added description field as optional
 }
 
 export interface MenuItem {
@@ -67,3 +69,4 @@ export interface FavoriteItem {
   menuItemId: string;
   menuItem?: MenuItem;
 }
+
