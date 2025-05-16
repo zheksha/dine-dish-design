@@ -4,6 +4,7 @@ import { useRestaurant } from '../../hooks/useRestaurant';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import ThemeManager from '../../components/dashboard/ThemeManager';
 import RestaurantDetails from '../../components/dashboard/RestaurantDetails';
+import RestaurantQRCode from '../../components/dashboard/RestaurantQRCode';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -31,6 +32,9 @@ const RestaurantPage: React.FC = () => {
     navigate(newUrl, { replace: true });
   };
 
+  // Generate restaurant URL for QR code
+  const restaurantUrl = window.location.origin;
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -44,11 +48,20 @@ const RestaurantPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Restaurant Settings</h1>
-          <p className="text-muted-foreground">
-            Manage your restaurant's information and appearance
-          </p>
+        <div className="flex justify-between items-start flex-wrap gap-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Restaurant Settings</h1>
+            <p className="text-muted-foreground">
+              Manage your restaurant's information and appearance
+            </p>
+          </div>
+          
+          {restaurant && (
+            <RestaurantQRCode 
+              restaurantUrl={`${restaurantUrl}/menu`}
+              restaurantName={restaurant.name}
+            />
+          )}
         </div>
 
         <Tabs

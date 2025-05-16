@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,15 +15,28 @@ const RestaurantDetails: React.FC = () => {
   const { restaurant, updateRestaurant, isLoading } = useRestaurant();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: restaurant?.name || '',
-    address: restaurant?.address || '',
-    contactEmail: restaurant?.contactEmail || '',
-    contactPhone: restaurant?.contactPhone || '',
-    logoUrl: restaurant?.logoUrl || ''
+    name: '',
+    address: '',
+    contactEmail: '',
+    contactPhone: '',
+    logoUrl: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update form data when restaurant data is loaded
+  useEffect(() => {
+    if (restaurant) {
+      setFormData({
+        name: restaurant.name || '',
+        address: restaurant.address || '',
+        contactEmail: restaurant.contactEmail || '',
+        contactPhone: restaurant.contactPhone || '',
+        logoUrl: restaurant.logoUrl || ''
+      });
+    }
+  }, [restaurant]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, X, Edit, Trash2, Check } from 'lucide-react';
+import { Plus, X, Edit, Trash2 } from 'lucide-react';
 import { 
   Dialog,
   DialogContent,
@@ -32,10 +32,13 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useRestaurant } from '../../hooks/useRestaurant';
 import { Category, MenuItem } from '../../types';
+import MenuPrint from '../../components/dashboard/MenuPrint';
 
 const MenuPage: React.FC = () => {
   const { categories, menuItems, isLoading, addCategory, updateCategory, deleteCategory, addMenuItem, updateMenuItem, deleteMenuItem } = useMenu();
+  const { restaurant } = useRestaurant();
   const { toast } = useToast();
   
   // Category form state
@@ -325,11 +328,21 @@ const MenuPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Menu Management</h1>
-          <p className="text-muted-foreground">
-            Add, edit, and manage your menu categories and food items.
-          </p>
+        <div className="flex flex-wrap justify-between items-start gap-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Menu Management</h1>
+            <p className="text-muted-foreground">
+              Add, edit, and manage your menu categories and food items.
+            </p>
+          </div>
+          
+          {restaurant && (
+            <MenuPrint 
+              categories={categories} 
+              menuItems={menuItems}
+              restaurantName={restaurant.name}
+            />
+          )}
         </div>
         
         <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
