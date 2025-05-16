@@ -9,6 +9,9 @@ import { useTheme } from '@/context/ThemeContext';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRestaurant } from '@/hooks/useRestaurant';
 
+// Define the Theme type using the one from ThemeContext
+type Theme = 'light' | 'dark' | 'system';
+
 // Predefined color themes - improved with better combinations for light/dark mode
 const predefinedThemes = [
   {
