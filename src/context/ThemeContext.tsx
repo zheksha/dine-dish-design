@@ -20,14 +20,30 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const root = window.document.documentElement;
     
-    // If theme is system, check user preference
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.remove('light', 'dark');
-      root.classList.add(systemTheme);
+    // Check if we're in the dashboard path
+    const isDashboardPath = window.location.pathname.includes('/dashboard');
+    
+    // Only apply theme settings if we're not in dashboard
+    if (!isDashboardPath) {
+      // If theme is system, check user preference
+      if (theme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.classList.remove('light', 'dark');
+        root.classList.add(systemTheme);
+      } else {
+        root.classList.remove('light', 'dark');
+        root.classList.add(theme);
+      }
     } else {
-      root.classList.remove('light', 'dark');
-      root.classList.add(theme);
+      // In dashboard, we always use the actual theme setting without applying restaurant themes
+      if (theme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.classList.remove('light', 'dark');
+        root.classList.add(systemTheme);
+      } else {
+        root.classList.remove('light', 'dark');
+        root.classList.add(theme);
+      }
     }
     
     localStorage.setItem('theme', theme);

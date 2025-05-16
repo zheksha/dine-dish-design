@@ -91,6 +91,7 @@ const ThemeManager: React.FC = () => {
   const { restaurant, updateRestaurant } = useRestaurant();
   const [previewTheme, setPreviewTheme] = useState<string | null>(null);
   const [isApplying, setIsApplying] = useState(false);
+  const [themeVarsApplied, setThemeVarsApplied] = useState(false);
   
   // Find current theme from restaurant settings or default to first theme
   const getCurrentThemeId = () => {
@@ -102,23 +103,41 @@ const ThemeManager: React.FC = () => {
     return predefinedThemes.find(t => t.id === themeId) || predefinedThemes[0];
   };
 
-  // Apply theme settings from restaurant on component mount
+  // This effect only runs once when the component mounts
+  // It stores the original theme values so we can restore them when navigating away
   useEffect(() => {
-    if (restaurant?.themeSettings) {
-      const themeSettings = restaurant.themeSettings;
-      
-      // Apply theme settings from database to CSS variables
-      document.documentElement.style.setProperty('--primary', themeSettings.primary);
-      document.documentElement.style.setProperty('--secondary', themeSettings.secondary);
-      document.documentElement.style.setProperty('--accent', themeSettings.accent);
-      document.documentElement.style.setProperty('--background', themeSettings.background);
-      
-      // Set preview theme based on restaurant theme ID
-      if (restaurant.themeId) {
-        setPreviewTheme(restaurant.themeId);
-      }
+    // Store original CSS variables when component mounts
+    const originalVars = {
+      primary: getComputedStyle(document.documentElement).getPropertyValue('--primary'),
+      secondary: getComputedStyle(document.documentElement).getPropertyValue('--secondary'),
+      accent: getComputedStyle(document.documentElement).getPropertyValue('--accent'),
+      background: getComputedStyle(document.documentElement).getPropertyValue('--background')
+    };
+
+    // Set preview theme based on restaurant theme ID
+    if (restaurant?.themeId) {
+      setPreviewTheme(restaurant.themeId);
     }
-  }, [restaurant?.themeSettings, restaurant?.themeId]);
+
+    // Cleanup function to restore original theme when component unmounts
+    return () => {
+      if (themeVarsApplied) {
+        // Restore original theme variables
+        document.documentElement.style.removeProperty('--primary');
+        document.documentElement.style.removeProperty('--secondary');
+        document.documentElement.style.removeProperty('--accent');
+        document.documentElement.style.removeProperty('--background');
+        
+        // Force a reload of the theme from localStorage
+        const savedTheme = localStorage.getItem('theme') as Theme || 'system';
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const themeToApply = savedTheme === 'system' ? systemTheme : savedTheme;
+        
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(themeToApply);
+      }
+    };
+  }, []);
 
   const handleThemeChange = (themeName: 'light' | 'dark' | 'system') => {
     setTheme(themeName);
@@ -134,11 +153,12 @@ const ThemeManager: React.FC = () => {
     setIsApplying(true);
     setPreviewTheme(selectedTheme.id);
     
-    // Set CSS variables
+    // Set CSS variables for preview only
     document.documentElement.style.setProperty('--primary', selectedTheme.primary);
     document.documentElement.style.setProperty('--secondary', selectedTheme.secondary);
     document.documentElement.style.setProperty('--accent', selectedTheme.accent);
     document.documentElement.style.setProperty('--background', selectedTheme.background);
+    setThemeVarsApplied(true);
     
     try {
       // Save theme to database
@@ -155,7 +175,7 @@ const ThemeManager: React.FC = () => {
       
       toast({
         title: 'Theme Applied',
-        description: `${selectedTheme.name} theme has been applied and saved`,
+        description: `${selectedTheme.name} theme has been applied and saved for the restaurant menu`,
       });
     } catch (error) {
       console.error("Error saving theme:", error);
@@ -198,7 +218,7 @@ const ThemeManager: React.FC = () => {
             <Palette className="h-5 w-5" /> Theme Mode
           </CardTitle>
           <CardDescription>
-            Choose between light, dark or system theme preference
+            Choose between light, dark or system theme preference for the dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -226,10 +246,10 @@ const ThemeManager: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Brush className="h-5 w-5" /> Color Themes
+            <Brush className="h-5 w-5" /> Restaurant Color Themes
           </CardTitle>
           <CardDescription>
-            Choose from predefined color themes for your restaurant
+            Choose from predefined color themes for your restaurant menu (these settings only affect the customer-facing menu)
           </CardDescription>
         </CardHeader>
         <CardContent>

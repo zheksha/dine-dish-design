@@ -6,6 +6,7 @@ import ThemeManager from '../../components/dashboard/ThemeManager';
 import RestaurantDetails from '../../components/dashboard/RestaurantDetails';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const RestaurantPage: React.FC = () => {
   const { restaurant, isLoading } = useRestaurant();
@@ -55,18 +56,20 @@ const RestaurantPage: React.FC = () => {
           onValueChange={handleTabChange}
           className="space-y-4"
         >
-          <TabsList>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="appearance">Appearance</TabsTrigger>
+          <TabsList className="w-full md:w-auto flex flex-wrap">
+            <TabsTrigger value="details" className="flex-1 md:flex-none">Details</TabsTrigger>
+            <TabsTrigger value="appearance" className="flex-1 md:flex-none">Appearance</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="details" className="space-y-4">
-            <RestaurantDetails />
-          </TabsContent>
-          
-          <TabsContent value="appearance" className="space-y-4">
-            <ThemeManager />
-          </TabsContent>
+          <ScrollArea className="h-[calc(100vh-240px)] md:h-auto">
+            <TabsContent value="details" className="space-y-4">
+              <RestaurantDetails />
+            </TabsContent>
+            
+            <TabsContent value="appearance" className="space-y-4">
+              <ThemeManager />
+            </TabsContent>
+          </ScrollArea>
         </Tabs>
       </div>
     </DashboardLayout>
